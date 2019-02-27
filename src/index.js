@@ -1151,11 +1151,4 @@ const SpatialNavigation = {
     },
 };
 
-window.SpatialNavigation = SpatialNavigation;
-
-/**
- * CommonJS Interface
- */
-if (typeof module === 'object') {
-    module.exports = SpatialNavigation;
-}
+export default SpatialNavigation;
