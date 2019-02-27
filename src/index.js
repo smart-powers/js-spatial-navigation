@@ -93,15 +93,18 @@ function getRect(elem) {
         width: cr.width,
         height: cr.height,
     };
+
     rect.element = elem;
     rect.center = {
         x: rect.left + Math.floor(rect.width / 2),
         y: rect.top + Math.floor(rect.height / 2),
     };
+
     rect.center.left = rect.center.x;
     rect.center.right = rect.center.x;
     rect.center.top = rect.center.y;
     rect.center.bottom = rect.center.y;
+
     return rect;
 }
 
@@ -131,6 +134,7 @@ function partition(rects, targetRect, straightOverlapThreshold) {
         }
 
         const groupId = y * 3 + x;
+
         groups[groupId].push(rect);
 
         if ([0, 2, 6, 8].indexOf(groupId) !== -1) {
@@ -177,49 +181,64 @@ function generateDistanceFunction(targetRect) {
     return {
         nearPlumbLineIsBetter(rect) {
             let d;
+
             if (rect.center.x < targetRect.center.x) {
                 d = targetRect.center.x - rect.right;
             } else {
                 d = rect.left - targetRect.center.x;
             }
+
             return d < 0 ? 0 : d;
         },
+
         nearHorizonIsBetter(rect) {
             let d;
+
             if (rect.center.y < targetRect.center.y) {
                 d = targetRect.center.y - rect.bottom;
             } else {
                 d = rect.top - targetRect.center.y;
             }
+
             return d < 0 ? 0 : d;
         },
+
         nearTargetLeftIsBetter(rect) {
             let d;
+
             if (rect.center.x < targetRect.center.x) {
                 d = targetRect.left - rect.right;
             } else {
                 d = rect.left - targetRect.left;
             }
+
             return d < 0 ? 0 : d;
         },
+
         nearTargetTopIsBetter(rect) {
             let d;
+
             if (rect.center.y < targetRect.center.y) {
                 d = targetRect.top - rect.bottom;
             } else {
                 d = rect.top - targetRect.top;
             }
+
             return d < 0 ? 0 : d;
         },
+
         topIsBetter(rect) {
             return rect.top;
         },
+
         bottomIsBetter(rect) {
             return -1 * rect.bottom;
         },
+
         leftIsBetter(rect) {
             return rect.left;
         },
+
         rightIsBetter(rect) {
             return -1 * rect.right;
         },
@@ -228,6 +247,7 @@ function generateDistanceFunction(targetRect) {
 
 function prioritize(priorities) {
     let destPriority = null;
+
     for (let i = 0; i < priorities.length; i += 1) {
         if (priorities[i].group.length) {
             destPriority = priorities[i];
@@ -245,10 +265,12 @@ function prioritize(priorities) {
         for (let i = 0; i < destDistance.length; i += 1) {
             const distance = destDistance[i];
             const delta = distance(a) - distance(b);
+
             if (delta) {
                 return delta;
             }
         }
+
         return 0;
     });
 
@@ -261,31 +283,32 @@ function navigate(target, direction, candidates, config) {
     }
 
     const rects = [];
+
     for (let i = 0; i < candidates.length; i += 1) {
         const rect = getRect(candidates[i]);
         if (rect) {
             rects.push(rect);
         }
     }
+
     if (!rects.length) {
         return null;
     }
 
     const targetRect = getRect(target);
+
     if (!targetRect) {
         return null;
     }
 
     const distanceFunction = generateDistanceFunction(targetRect);
-
     const groups = partition(rects, targetRect, config.straightOverlapThreshold);
-
     const internalGroups = partition(groups[4], targetRect.center, config.straightOverlapThreshold);
 
     let priorities;
 
     switch (direction) {
-        case 'left':
+        case 'left': {
             priorities = [
                 {
                     group: internalGroups[0].concat(internalGroups[3]).concat(internalGroups[6]),
@@ -305,7 +328,9 @@ function navigate(target, direction, candidates, config) {
                 },
             ];
             break;
-        case 'right':
+        }
+
+        case 'right': {
             priorities = [
                 {
                     group: internalGroups[2].concat(internalGroups[5]).concat(internalGroups[8]),
@@ -325,7 +350,9 @@ function navigate(target, direction, candidates, config) {
                 },
             ];
             break;
-        case 'up':
+        }
+
+        case 'up': {
             priorities = [
                 {
                     group: internalGroups[0].concat(internalGroups[1]).concat(internalGroups[2]),
@@ -345,7 +372,9 @@ function navigate(target, direction, candidates, config) {
                 },
             ];
             break;
-        case 'down':
+        }
+
+        case 'down': {
             priorities = [
                 {
                     group: internalGroups[6].concat(internalGroups[7]).concat(internalGroups[8]),
@@ -365,8 +394,11 @@ function navigate(target, direction, candidates, config) {
                 },
             ];
             break;
-        default:
+        }
+
+        default: {
             return null;
+        }
     }
 
     if (config.straightOnly) {
@@ -374,11 +406,13 @@ function navigate(target, direction, candidates, config) {
     }
 
     const destGroup = prioritize(priorities);
+
     if (!destGroup) {
         return null;
     }
 
     let dest = null;
+
     if (
         config.rememberSource &&
         config.previous &&
@@ -405,17 +439,20 @@ function navigate(target, direction, candidates, config) {
  */
 function generateId() {
     let id;
+
     while (true) {
         id = ID_POOL_PREFIX + String(++_idPool);
         if (!_sections[id]) {
             break;
         }
     }
+
     return id;
 }
 
 function parseSelector(selector) {
     let result;
+
     if (typeof selector === 'string') {
         result = [].slice.call(document.querySelectorAll(selector));
     } else if (typeof selector === 'object' && selector.length) {
@@ -425,6 +462,7 @@ function parseSelector(selector) {
     } else {
         result = [];
     }
+
     return result;
 }
 
@@ -432,17 +470,21 @@ function matchSelector(elem, selector) {
     if (typeof selector === 'string') {
         return elementMatchesSelector.call(elem, selector);
     }
+
     if (typeof selector === 'object' && selector.length) {
         return selector.indexOf(elem) >= 0;
     }
+
     if (typeof selector === 'object' && selector.nodeType === 1) {
         return elem === selector;
     }
+
     return false;
 }
 
 function getCurrentFocusedElement() {
     const { activeElement } = document;
+
     if (activeElement && activeElement !== document.body) {
         return activeElement;
     }
@@ -454,12 +496,15 @@ function exclude(elemList, excludedElem) {
     if (!Array.isArray(excludedElem)) {
         excludedElem = [excludedElem];
     }
-    for (let i = 0, index; i < excludedElem.length; i++) {
+
+    for (let i = 0, index; i < excludedElem.length; i += 1) {
         index = elemList.indexOf(excludedElem[i]);
+
         if (index >= 0) {
             elemList.splice(index, 1);
         }
     }
+
     return elemList;
 }
 
@@ -467,12 +512,15 @@ function isNavigable(elem, sectionId, verifySectionSelector) {
     if (!elem || !sectionId || !_sections[sectionId] || _sections[sectionId].disabled) {
         return false;
     }
+
     if ((elem.offsetWidth <= 0 && elem.offsetHeight <= 0) || elem.hasAttribute('disabled')) {
         return false;
     }
+
     if (verifySectionSelector && !matchSelector(elem, _sections[sectionId].selector)) {
         return false;
     }
+
     if (typeof _sections[sectionId].navigableFilter === 'function') {
         if (_sections[sectionId].navigableFilter(elem, sectionId) === false) {
             return false;
@@ -482,6 +530,7 @@ function isNavigable(elem, sectionId, verifySectionSelector) {
             return false;
         }
     }
+
     return true;
 }
 
@@ -501,30 +550,33 @@ function getSectionNavigableElements(sectionId) {
 
 function getSectionDefaultElement(sectionId) {
     let { defaultElement } = _sections[sectionId];
+
     if (!defaultElement) {
         return null;
     }
+
     if (typeof defaultElement === 'string') {
         defaultElement = parseSelector(defaultElement)[0];
     }
+
     if (isNavigable(defaultElement, sectionId, true)) {
         return defaultElement;
     }
+
     return null;
 }
 
 function getSectionLastFocusedElement(sectionId) {
     const { lastFocusedElement } = _sections[sectionId];
+
     if (!isNavigable(lastFocusedElement, sectionId, true)) {
         return null;
     }
+
     return lastFocusedElement;
 }
 
-function fireEvent(elem, type, details, cancelable) {
-    if (arguments.length < 4) {
-        cancelable = true;
-    }
+function fireEvent(elem, type, details, cancelable = true) {
     const evt = document.createEvent('CustomEvent');
     evt.initCustomEvent(EVENT_PREFIX + type, true, cancelable, details);
     return elem.dispatchEvent(evt);
@@ -534,6 +586,7 @@ function focusChanged(elem, sectionId) {
     if (!sectionId) {
         sectionId = getSectionId(elem);
     }
+
     if (sectionId) {
         _sections[sectionId].lastFocusedElement = elem;
         _lastSectionId = sectionId;
@@ -551,6 +604,7 @@ function focusElement(elem, sectionId, direction) {
         if (currentFocusedElement) {
             currentFocusedElement.blur();
         }
+
         elem.focus();
         focusChanged(elem, sectionId);
     };
@@ -575,10 +629,12 @@ function focusElement(elem, sectionId, direction) {
             direction,
             native: false,
         };
+
         if (!fireEvent(currentFocusedElement, 'willunfocus', unfocusProperties)) {
             _duringFocusChange = false;
             return false;
         }
+
         currentFocusedElement.blur();
         fireEvent(currentFocusedElement, 'unfocused', unfocusProperties, false);
     }
@@ -589,36 +645,20 @@ function focusElement(elem, sectionId, direction) {
         direction,
         native: false,
     };
+
     if (!fireEvent(elem, 'willfocus', focusProperties)) {
         _duringFocusChange = false;
         return false;
     }
+
     elem.focus();
     fireEvent(elem, 'focused', focusProperties, false);
 
     _duringFocusChange = false;
 
     focusChanged(elem, sectionId);
+
     return true;
-}
-
-function focusExtendedSelector(selector, direction) {
-    if (selector.charAt(0) == '@') {
-        if (selector.length == 1) {
-            return focusSection();
-        }
-        const sectionId = selector.substr(1);
-        return focusSection(sectionId);
-    }
-    const next = parseSelector(selector)[0];
-    if (next) {
-        const nextSectionId = getSectionId(next);
-        if (isNavigable(next, nextSectionId)) {
-            return focusElement(next, nextSectionId, direction);
-        }
-    }
-
-    return false;
 }
 
 function focusSection(sectionId) {
@@ -641,7 +681,7 @@ function focusSection(sectionId) {
         const id = range[i];
         let next;
 
-        if (_sections[id].enterTo == 'last-focused') {
+        if (_sections[id].enterTo === 'last-focused') {
             next =
                 getSectionLastFocusedElement(id) || getSectionDefaultElement(id) || getSectionNavigableElements(id)[0];
         } else {
@@ -657,15 +697,32 @@ function focusSection(sectionId) {
     return false;
 }
 
+function focusExtendedSelector(selector, direction) {
+    if (selector.charAt(0) === '@') {
+        if (selector.length === 1) {
+            return focusSection();
+        }
+
+        const sectionId = selector.substr(1);
+
+        return focusSection(sectionId);
+    }
+
+    const next = parseSelector(selector)[0];
+
+    if (next) {
+        const nextSectionId = getSectionId(next);
+
+        if (isNavigable(next, nextSectionId)) {
+            return focusElement(next, nextSectionId, direction);
+        }
+    }
+
+    return false;
+}
+
 function fireNavigatefailed(elem, direction) {
-    fireEvent(
-        elem,
-        'navigatefailed',
-        {
-            direction,
-        },
-        false,
-    );
+    fireEvent(elem, 'navigatefailed', { direction }, false);
 }
 
 function gotoLeaveFor(sectionId, direction) {
@@ -676,29 +733,35 @@ function gotoLeaveFor(sectionId, direction) {
             if (next === '') {
                 return null;
             }
+
             return focusExtendedSelector(next, direction);
         }
 
         const nextSectionId = getSectionId(next);
+
         if (isNavigable(next, nextSectionId)) {
             return focusElement(next, nextSectionId, direction);
         }
     }
+
     return false;
 }
 
 function focusNext(direction, currentFocusedElement, currentSectionId) {
     const extSelector = currentFocusedElement.getAttribute(`data-sn-${direction}`);
+
     if (typeof extSelector === 'string') {
         if (extSelector === '' || !focusExtendedSelector(extSelector, direction)) {
             fireNavigatefailed(currentFocusedElement, direction);
             return false;
         }
+
         return true;
     }
 
     const sectionNavigableElements = {};
     let allNavigableElements = [];
+
     for (const id in _sections) {
         sectionNavigableElements[id] = getSectionNavigableElements(id);
         allNavigableElements = allNavigableElements.concat(sectionNavigableElements[id]);
@@ -707,7 +770,7 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
     const config = { ...GlobalConfig, ..._sections[currentSectionId] };
     let next;
 
-    if (config.restrict == 'self-only' || config.restrict == 'self-first') {
+    if (config.restrict === 'self-only' || config.restrict === 'self-first') {
         const currentSectionNavigableElements = sectionNavigableElements[currentSectionId];
 
         next = navigate(
@@ -717,7 +780,7 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
             config,
         );
 
-        if (!next && config.restrict == 'self-first') {
+        if (!next && config.restrict === 'self-first') {
             next = navigate(
                 currentFocusedElement,
                 direction,
@@ -738,26 +801,33 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
 
         const nextSectionId = getSectionId(next);
 
-        if (currentSectionId != nextSectionId) {
+        if (currentSectionId !== nextSectionId) {
             const result = gotoLeaveFor(currentSectionId, direction);
+
             if (result) {
                 return true;
             }
+
             if (result === null) {
                 fireNavigatefailed(currentFocusedElement, direction);
                 return false;
             }
 
             let enterToElement;
+
             switch (_sections[nextSectionId].enterTo) {
-                case 'last-focused':
+                case 'last-focused': {
                     enterToElement =
                         getSectionLastFocusedElement(nextSectionId) || getSectionDefaultElement(nextSectionId);
                     break;
-                case 'default-element':
+                }
+
+                case 'default-element': {
                     enterToElement = getSectionDefaultElement(nextSectionId);
                     break;
+                }
             }
+
             if (enterToElement) {
                 next = enterToElement;
             }
@@ -765,17 +835,19 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
 
         return focusElement(next, nextSectionId, direction);
     }
+
     if (gotoLeaveFor(currentSectionId, direction)) {
         return true;
     }
 
     fireNavigatefailed(currentFocusedElement, direction);
+
     return false;
 }
 
 function onKeyDown(evt) {
     if (!_sectionCount || _pause || evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) {
-        return;
+        return null;
     }
 
     let currentFocusedElement;
@@ -786,16 +858,19 @@ function onKeyDown(evt) {
     };
 
     const direction = KEYMAPPING[evt.keyCode];
+
     if (!direction) {
-        if (evt.keyCode == 13) {
+        if (evt.keyCode === 13) {
             currentFocusedElement = getCurrentFocusedElement();
+
             if (currentFocusedElement && getSectionId(currentFocusedElement)) {
                 if (!fireEvent(currentFocusedElement, 'enter-down')) {
                     return preventDefault();
                 }
             }
         }
-        return;
+
+        return null;
     }
 
     currentFocusedElement = getCurrentFocusedElement();
@@ -804,6 +879,7 @@ function onKeyDown(evt) {
         if (_lastSectionId) {
             currentFocusedElement = getSectionLastFocusedElement(_lastSectionId);
         }
+
         if (!currentFocusedElement) {
             focusSection();
             return preventDefault();
@@ -811,8 +887,9 @@ function onKeyDown(evt) {
     }
 
     const currentSectionId = getSectionId(currentFocusedElement);
+
     if (!currentSectionId) {
-        return;
+        return null;
     }
 
     const willmoveProperties = {
@@ -830,10 +907,12 @@ function onKeyDown(evt) {
 
 function onKeyUp(evt) {
     if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) {
-        return;
+        return null;
     }
-    if (!_pause && _sectionCount && evt.keyCode == 13) {
+
+    if (!_pause && _sectionCount && evt.keyCode === 13) {
         const currentFocusedElement = getCurrentFocusedElement();
+
         if (currentFocusedElement && getSectionId(currentFocusedElement)) {
             if (!fireEvent(currentFocusedElement, 'enter-up')) {
                 evt.preventDefault();
@@ -845,12 +924,14 @@ function onKeyUp(evt) {
 
 function onFocus(evt) {
     const { target } = evt;
+
     if (target !== window && target !== document && _sectionCount && !_duringFocusChange) {
         const sectionId = getSectionId(target);
+
         if (sectionId) {
             if (_pause) {
                 focusChanged(target, sectionId);
-                return;
+                return null;
             }
 
             const focusProperties = {
@@ -872,6 +953,7 @@ function onFocus(evt) {
 
 function onBlur(evt) {
     const { target } = evt;
+
     if (
         target !== window &&
         target !== document &&
@@ -883,6 +965,7 @@ function onBlur(evt) {
         const unfocusProperties = {
             native: true,
         };
+
         if (!fireEvent(target, 'willunfocus', unfocusProperties)) {
             _duringFocusChange = true;
             setTimeout(() => {
@@ -938,6 +1021,7 @@ const SpatialNavigation = {
         } else if (typeof arguments[0] === 'string' && typeof arguments[1] === 'object') {
             sectionId = arguments[0];
             config = arguments[1];
+
             if (!_sections[sectionId]) {
                 throw new Error(`Section "${sectionId}" doesn't exist!`);
             }
@@ -994,15 +1078,19 @@ const SpatialNavigation = {
         if (!sectionId || typeof sectionId !== 'string') {
             throw new Error('Please assign the "sectionId"!');
         }
+
         if (_sections[sectionId]) {
             delete _sections[sectionId];
             _sections = { ..._sections };
-            _sectionCount--;
+            _sectionCount -= 1;
+
             if (_lastSectionId === sectionId) {
                 _lastSectionId = '';
             }
+
             return true;
         }
+
         return false;
     },
 
@@ -1011,6 +1099,7 @@ const SpatialNavigation = {
             _sections[sectionId].disabled = true;
             return true;
         }
+
         return false;
     },
 
@@ -1019,6 +1108,7 @@ const SpatialNavigation = {
             _sections[sectionId].disabled = false;
             return true;
         }
+
         return false;
     },
 
@@ -1058,6 +1148,7 @@ const SpatialNavigation = {
             }
         } else {
             const nextSectionId = getSectionId(elem);
+
             if (isNavigable(elem, nextSectionId)) {
                 result = focusElement(elem, nextSectionId);
             }
@@ -1074,16 +1165,19 @@ const SpatialNavigation = {
     // move(<direction>, <selector>)
     move(direction, selector) {
         direction = direction.toLowerCase();
+
         if (!REVERSE[direction]) {
             return false;
         }
 
         const elem = selector ? parseSelector(selector)[0] : getCurrentFocusedElement();
+
         if (!elem) {
             return false;
         }
 
         const sectionId = getSectionId(elem);
+
         if (!sectionId) {
             return false;
         }
@@ -1107,6 +1201,7 @@ const SpatialNavigation = {
         const doMakeFocusable = section => {
             const tabIndexIgnoreList =
                 section.tabIndexIgnoreList !== undefined ? section.tabIndexIgnoreList : GlobalConfig.tabIndexIgnoreList;
+
             parseSelector(section.selector).forEach(elem => {
                 if (!matchSelector(elem, tabIndexIgnoreList)) {
                     if (!elem.getAttribute('tabindex')) {
