@@ -4,7 +4,7 @@ import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 const defaultConfig = {
-    input: 'src/spatial_navigation.js',
+    input: 'src/index.js',
     external: [
         ...Object.keys(pkg.dependencies || {}),
         ...Object.keys(pkg.peerDependencies || {})
