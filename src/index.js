@@ -98,15 +98,17 @@ function getRect(elem) {
         x: rect.left + Math.floor(rect.width / 2),
         y: rect.top + Math.floor(rect.height / 2),
     };
-    rect.center.left = rect.center.right = rect.center.x;
-    rect.center.top = rect.center.bottom = rect.center.y;
+    rect.center.left = rect.center.x;
+    rect.center.right = rect.center.x;
+    rect.center.top = rect.center.y;
+    rect.center.bottom = rect.center.y;
     return rect;
 }
 
 function partition(rects, targetRect, straightOverlapThreshold) {
     const groups = [[], [], [], [], [], [], [], [], []];
 
-    for (let i = 0; i < rects.length; i++) {
+    for (let i = 0; i < rects.length; i += 1) {
         const rect = rects[i];
         const { center } = rect;
         let x;
@@ -226,7 +228,7 @@ function generateDistanceFunction(targetRect) {
 
 function prioritize(priorities) {
     let destPriority = null;
-    for (let i = 0; i < priorities.length; i++) {
+    for (let i = 0; i < priorities.length; i += 1) {
         if (priorities[i].group.length) {
             destPriority = priorities[i];
             break;
@@ -239,8 +241,8 @@ function prioritize(priorities) {
 
     const destDistance = destPriority.distance;
 
-    destPriority.group.sort(function(a, b) {
-        for (let i = 0; i < destDistance.length; i++) {
+    destPriority.group.sort((a, b) => {
+        for (let i = 0; i < destDistance.length; i += 1) {
             const distance = destDistance[i];
             const delta = distance(a) - distance(b);
             if (delta) {
@@ -259,7 +261,7 @@ function navigate(target, direction, candidates, config) {
     }
 
     const rects = [];
-    for (let i = 0; i < candidates.length; i++) {
+    for (let i = 0; i < candidates.length; i += 1) {
         const rect = getRect(candidates[i]);
         if (rect) {
             rects.push(rect);
@@ -383,7 +385,7 @@ function navigate(target, direction, candidates, config) {
         config.previous.destination === target &&
         config.previous.reverse === direction
     ) {
-        for (let j = 0; j < destGroup.length; j++) {
+        for (let j = 0; j < destGroup.length; j += 1) {
             if (destGroup[j].element === config.previous.target) {
                 dest = destGroup[j].element;
                 break;
@@ -444,9 +446,11 @@ function getCurrentFocusedElement() {
     if (activeElement && activeElement !== document.body) {
         return activeElement;
     }
+
+    return null;
 }
 
-function extend(out) {
+function extend(out = {}) {
     out = out || {};
     for (let i = 1; i < arguments.length; i++) {
         if (!arguments[i]) {
@@ -502,12 +506,12 @@ function getSectionId(elem) {
             return id;
         }
     }
+
+    return null;
 }
 
 function getSectionNavigableElements(sectionId) {
-    return parseSelector(_sections[sectionId].selector).filter(function(elem) {
-        return isNavigable(elem, sectionId);
-    });
+    return parseSelector(_sections[sectionId].selector).filter(elem => isNavigable(elem, sectionId));
 }
 
 function getSectionDefaultElement(sectionId) {
@@ -541,6 +545,16 @@ function fireEvent(elem, type, details, cancelable) {
     return elem.dispatchEvent(evt);
 }
 
+function focusChanged(elem, sectionId) {
+    if (!sectionId) {
+        sectionId = getSectionId(elem);
+    }
+    if (sectionId) {
+        _sections[sectionId].lastFocusedElement = elem;
+        _lastSectionId = sectionId;
+    }
+}
+
 function focusElement(elem, sectionId, direction) {
     if (!elem) {
         return false;
@@ -548,7 +562,7 @@ function focusElement(elem, sectionId, direction) {
 
     const currentFocusedElement = getCurrentFocusedElement();
 
-    const silentFocus = function() {
+    const silentFocus = () => {
         if (currentFocusedElement) {
             currentFocusedElement.blur();
         }
@@ -603,16 +617,6 @@ function focusElement(elem, sectionId, direction) {
     return true;
 }
 
-function focusChanged(elem, sectionId) {
-    if (!sectionId) {
-        sectionId = getSectionId(elem);
-    }
-    if (sectionId) {
-        _sections[sectionId].lastFocusedElement = elem;
-        _lastSectionId = sectionId;
-    }
-}
-
 function focusExtendedSelector(selector, direction) {
     if (selector.charAt(0) == '@') {
         if (selector.length == 1) {
@@ -634,7 +638,7 @@ function focusExtendedSelector(selector, direction) {
 
 function focusSection(sectionId) {
     const range = [];
-    const addRange = function(id) {
+    const addRange = id => {
         if (id && range.indexOf(id) < 0 && _sections[id] && !_sections[id].disabled) {
             range.push(id);
         }
@@ -790,7 +794,7 @@ function onKeyDown(evt) {
     }
 
     let currentFocusedElement;
-    const preventDefault = function() {
+    const preventDefault = () => {
         evt.preventDefault();
         evt.stopPropagation();
         return false;
@@ -896,7 +900,7 @@ function onBlur(evt) {
         };
         if (!fireEvent(target, 'willunfocus', unfocusProperties)) {
             _duringFocusChange = true;
-            setTimeout(function() {
+            setTimeout(() => {
                 target.focus();
                 _duringFocusChange = false;
             });
@@ -1115,10 +1119,10 @@ const SpatialNavigation = {
     // makeFocusable()
     // makeFocusable(<sectionId>)
     makeFocusable(sectionId) {
-        const doMakeFocusable = function(section) {
+        const doMakeFocusable = section => {
             const tabIndexIgnoreList =
                 section.tabIndexIgnoreList !== undefined ? section.tabIndexIgnoreList : GlobalConfig.tabIndexIgnoreList;
-            parseSelector(section.selector).forEach(function(elem) {
+            parseSelector(section.selector).forEach(elem => {
                 if (!matchSelector(elem, tabIndexIgnoreList)) {
                     if (!elem.getAttribute('tabindex')) {
                         elem.setAttribute('tabindex', '-1');
