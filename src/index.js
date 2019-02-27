@@ -450,21 +450,6 @@ function getCurrentFocusedElement() {
     return null;
 }
 
-function extend(out = {}) {
-    out = out || {};
-    for (let i = 1; i < arguments.length; i++) {
-        if (!arguments[i]) {
-            continue;
-        }
-        for (const key in arguments[i]) {
-            if (arguments[i].hasOwnProperty(key) && arguments[i][key] !== undefined) {
-                out[key] = arguments[i][key];
-            }
-        }
-    }
-    return out;
-}
-
 function exclude(elemList, excludedElem) {
     if (!Array.isArray(excludedElem)) {
         excludedElem = [excludedElem];
@@ -719,7 +704,7 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
         allNavigableElements = allNavigableElements.concat(sectionNavigableElements[id]);
     }
 
-    const config = extend({}, GlobalConfig, _sections[currentSectionId]);
+    const config = { ...GlobalConfig, ..._sections[currentSectionId] };
     let next;
 
     if (config.restrict == 'self-only' || config.restrict == 'self-first') {
@@ -972,7 +957,7 @@ const SpatialNavigation = {
 
         if (sectionId) {
             // remove "undefined" items
-            _sections[sectionId] = extend({}, _sections[sectionId]);
+            _sections[sectionId] = { ..._sections[sectionId] };
         }
     },
 
@@ -1010,8 +995,8 @@ const SpatialNavigation = {
             throw new Error('Please assign the "sectionId"!');
         }
         if (_sections[sectionId]) {
-            _sections[sectionId] = undefined;
-            _sections = extend({}, _sections);
+            delete _sections[sectionId];
+            _sections = { ..._sections };
             _sectionCount--;
             if (_lastSectionId === sectionId) {
                 _lastSectionId = '';
