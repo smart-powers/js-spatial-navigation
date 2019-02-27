@@ -26,12 +26,20 @@
   },
   "homepage": "https://github.com/smart-powers/js-spatial-navigation#readme",
   "devDependencies": {
-    "rollup": "1.2.3",
-    "rollup-plugin-babel": "4.3.2",
-    "rollup-plugin-terser": "4.0.4",
-    "rimraf": "2.6.3",
     "@babel/cli": "7.2.3",
     "@babel/core": "7.3.3",
-    "@babel/preset-env": "7.3.1"
+    "@babel/preset-env": "7.3.1",
+    "babel-eslint": "10.0.1",
+    "eslint": "5.14.1",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-prettier": "4.0.0",
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-prettier": "3.0.1",
+    "eslint-plugin-simple-import-sort": "3.0.0",
+    "prettier": "1.16.4",
+    "rimraf": "2.6.3",
+    "rollup": "1.2.3",
+    "rollup-plugin-babel": "4.3.2",
+    "rollup-plugin-terser": "4.0.4"
   }
 }
