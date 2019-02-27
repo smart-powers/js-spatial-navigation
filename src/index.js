@@ -7,6 +7,7 @@
  * Licensed under the MPL 2.0.
  */
 
+import { EVENT_PREFIX, ID_POOL_PREFIX, KEYMAPPING, REVERSE } from './constants';
 import { navigate } from './navigate';
 
 /**
@@ -34,26 +35,6 @@ const GlobalConfig = {
     tabIndexIgnoreList: 'a, input, select, textarea, button, iframe, [contentEditable=true]',
     navigableFilter: null,
 };
-
-/**
- * Constant Variable
- */
-const KEYMAPPING = {
-    '37': 'left',
-    '38': 'up',
-    '39': 'right',
-    '40': 'down',
-};
-
-const REVERSE = {
-    left: 'right',
-    up: 'down',
-    right: 'left',
-    down: 'up',
-};
-
-const EVENT_PREFIX = 'sn:';
-const ID_POOL_PREFIX = 'section-';
 
 /**
  * Private Variable
