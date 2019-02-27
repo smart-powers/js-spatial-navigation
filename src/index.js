@@ -107,9 +107,8 @@ function partition(rects, targetRect, straightOverlapThreshold) {
     for (let i = 0; i < rects.length; i++) {
         const rect = rects[i];
         const { center } = rect;
-        var x;
-        var y;
-        var groupId;
+        let x;
+        let y;
 
         if (center.x < targetRect.left) {
             x = 0;
@@ -127,7 +126,7 @@ function partition(rects, targetRect, straightOverlapThreshold) {
             y = 2;
         }
 
-        groupId = y * 3 + x;
+        const groupId = y * 3 + x;
         groups[groupId].push(rect);
 
         if ([0, 2, 6, 8].indexOf(groupId) !== -1) {
@@ -464,7 +463,7 @@ function exclude(elemList, excludedElem) {
     if (!Array.isArray(excludedElem)) {
         excludedElem = [excludedElem];
     }
-    for (var i = 0, index; i < excludedElem.length; i++) {
+    for (let i = 0, index; i < excludedElem.length; i++) {
         index = elemList.indexOf(excludedElem[i]);
         if (index >= 0) {
             elemList.splice(index, 1);
@@ -649,7 +648,7 @@ function focusSection(sectionId) {
 
     for (let i = 0; i < range.length; i++) {
         const id = range[i];
-        var next;
+        let next;
 
         if (_sections[id].enterTo == 'last-focused') {
             next =
@@ -908,7 +907,7 @@ function onBlur(evt) {
 /** **************** */
 /* Public Function */
 /** **************** */
-var SpatialNavigation = {
+const SpatialNavigation = {
     init() {
         if (!_ready) {
             window.addEventListener('keydown', onKeyDown);
