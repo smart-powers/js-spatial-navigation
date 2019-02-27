@@ -7,16 +7,16 @@
  * Licensed under the MPL 2.0.
  */
 
-/************************/
+/** ********************* */
 /* Global Configuration */
-/************************/
+/** ********************* */
 // Note: an <extSelector> can be one of following types:
 // - a valid selector string for "querySelectorAll"
 // - a NodeList or an array containing DOM elements
 // - a single DOM element
 // - a string "@<sectionId>" to indicate the specified section
 // - a string "@" to indicate the default section
-var GlobalConfig = {
+const GlobalConfig = {
     selector: '', // can be a valid <extSelector> except "@" syntax.
     straightOnly: false,
     straightOverlapThreshold: 0.5,
@@ -31,42 +31,42 @@ var GlobalConfig = {
     navigableFilter: null,
 };
 
-/*********************/
+/** ****************** */
 /* Constant Variable */
-/*********************/
-var KEYMAPPING = {
+/** ****************** */
+const KEYMAPPING = {
     '37': 'left',
     '38': 'up',
     '39': 'right',
     '40': 'down',
 };
 
-var REVERSE = {
+const REVERSE = {
     left: 'right',
     up: 'down',
     right: 'left',
     down: 'up',
 };
 
-var EVENT_PREFIX = 'sn:';
-var ID_POOL_PREFIX = 'section-';
+const EVENT_PREFIX = 'sn:';
+const ID_POOL_PREFIX = 'section-';
 
-/********************/
+/** ***************** */
 /* Private Variable */
-/********************/
-var _idPool = 0;
-var _ready = false;
-var _pause = false;
-var _sections = {};
-var _sectionCount = 0;
-var _defaultSectionId = '';
-var _lastSectionId = '';
-var _duringFocusChange = false;
+/** ***************** */
+let _idPool = 0;
+let _ready = false;
+let _pause = false;
+let _sections = {};
+let _sectionCount = 0;
+let _defaultSectionId = '';
+let _lastSectionId = '';
+let _duringFocusChange = false;
 
-/************/
+/** ********* */
 /* Polyfill */
-/************/
-var elementMatchesSelector =
+/** ********* */
+const elementMatchesSelector =
     Element.prototype.matches ||
     Element.prototype.matchesSelector ||
     Element.prototype.mozMatchesSelector ||
@@ -74,16 +74,16 @@ var elementMatchesSelector =
     Element.prototype.msMatchesSelector ||
     Element.prototype.oMatchesSelector ||
     function(selector) {
-        var matchedNodes = (this.parentNode || this.document).querySelectorAll(selector);
+        const matchedNodes = (this.parentNode || this.document).querySelectorAll(selector);
         return [].slice.call(matchedNodes).indexOf(this) >= 0;
     };
 
-/*****************/
+/** ************** */
 /* Core Function */
-/*****************/
+/** ************** */
 function getRect(elem) {
-    var cr = elem.getBoundingClientRect();
-    var rect = {
+    const cr = elem.getBoundingClientRect();
+    const rect = {
         left: cr.left,
         top: cr.top,
         right: cr.right,
@@ -102,12 +102,14 @@ function getRect(elem) {
 }
 
 function partition(rects, targetRect, straightOverlapThreshold) {
-    var groups = [[], [], [], [], [], [], [], [], []];
+    const groups = [[], [], [], [], [], [], [], [], []];
 
-    for (var i = 0; i < rects.length; i++) {
-        var rect = rects[i];
-        var center = rect.center;
-        var x, y, groupId;
+    for (let i = 0; i < rects.length; i++) {
+        const rect = rects[i];
+        const { center } = rect;
+        var x;
+        var y;
+        var groupId;
 
         if (center.x < targetRect.left) {
             x = 0;
@@ -129,7 +131,7 @@ function partition(rects, targetRect, straightOverlapThreshold) {
         groups[groupId].push(rect);
 
         if ([0, 2, 6, 8].indexOf(groupId) !== -1) {
-            var threshold = straightOverlapThreshold;
+            const threshold = straightOverlapThreshold;
 
             if (rect.left <= targetRect.right - targetRect.width * threshold) {
                 if (groupId === 2) {
@@ -170,8 +172,8 @@ function partition(rects, targetRect, straightOverlapThreshold) {
 
 function generateDistanceFunction(targetRect) {
     return {
-        nearPlumbLineIsBetter: function(rect) {
-            var d;
+        nearPlumbLineIsBetter(rect) {
+            let d;
             if (rect.center.x < targetRect.center.x) {
                 d = targetRect.center.x - rect.right;
             } else {
@@ -179,8 +181,8 @@ function generateDistanceFunction(targetRect) {
             }
             return d < 0 ? 0 : d;
         },
-        nearHorizonIsBetter: function(rect) {
-            var d;
+        nearHorizonIsBetter(rect) {
+            let d;
             if (rect.center.y < targetRect.center.y) {
                 d = targetRect.center.y - rect.bottom;
             } else {
@@ -188,8 +190,8 @@ function generateDistanceFunction(targetRect) {
             }
             return d < 0 ? 0 : d;
         },
-        nearTargetLeftIsBetter: function(rect) {
-            var d;
+        nearTargetLeftIsBetter(rect) {
+            let d;
             if (rect.center.x < targetRect.center.x) {
                 d = targetRect.left - rect.right;
             } else {
@@ -197,8 +199,8 @@ function generateDistanceFunction(targetRect) {
             }
             return d < 0 ? 0 : d;
         },
-        nearTargetTopIsBetter: function(rect) {
-            var d;
+        nearTargetTopIsBetter(rect) {
+            let d;
             if (rect.center.y < targetRect.center.y) {
                 d = targetRect.top - rect.bottom;
             } else {
@@ -206,24 +208,24 @@ function generateDistanceFunction(targetRect) {
             }
             return d < 0 ? 0 : d;
         },
-        topIsBetter: function(rect) {
+        topIsBetter(rect) {
             return rect.top;
         },
-        bottomIsBetter: function(rect) {
+        bottomIsBetter(rect) {
             return -1 * rect.bottom;
         },
-        leftIsBetter: function(rect) {
+        leftIsBetter(rect) {
             return rect.left;
         },
-        rightIsBetter: function(rect) {
+        rightIsBetter(rect) {
             return -1 * rect.right;
         },
     };
 }
 
 function prioritize(priorities) {
-    var destPriority = null;
-    for (var i = 0; i < priorities.length; i++) {
+    let destPriority = null;
+    for (let i = 0; i < priorities.length; i++) {
         if (priorities[i].group.length) {
             destPriority = priorities[i];
             break;
@@ -234,12 +236,12 @@ function prioritize(priorities) {
         return null;
     }
 
-    var destDistance = destPriority.distance;
+    const destDistance = destPriority.distance;
 
     destPriority.group.sort(function(a, b) {
-        for (var i = 0; i < destDistance.length; i++) {
-            var distance = destDistance[i];
-            var delta = distance(a) - distance(b);
+        for (let i = 0; i < destDistance.length; i++) {
+            const distance = destDistance[i];
+            const delta = distance(a) - distance(b);
             if (delta) {
                 return delta;
             }
@@ -255,9 +257,9 @@ function navigate(target, direction, candidates, config) {
         return null;
     }
 
-    var rects = [];
-    for (var i = 0; i < candidates.length; i++) {
-        var rect = getRect(candidates[i]);
+    const rects = [];
+    for (let i = 0; i < candidates.length; i++) {
+        const rect = getRect(candidates[i]);
         if (rect) {
             rects.push(rect);
         }
@@ -266,18 +268,18 @@ function navigate(target, direction, candidates, config) {
         return null;
     }
 
-    var targetRect = getRect(target);
+    const targetRect = getRect(target);
     if (!targetRect) {
         return null;
     }
 
-    var distanceFunction = generateDistanceFunction(targetRect);
+    const distanceFunction = generateDistanceFunction(targetRect);
 
-    var groups = partition(rects, targetRect, config.straightOverlapThreshold);
+    const groups = partition(rects, targetRect, config.straightOverlapThreshold);
 
-    var internalGroups = partition(groups[4], targetRect.center, config.straightOverlapThreshold);
+    const internalGroups = partition(groups[4], targetRect.center, config.straightOverlapThreshold);
 
-    var priorities;
+    let priorities;
 
     switch (direction) {
         case 'left':
@@ -368,19 +370,19 @@ function navigate(target, direction, candidates, config) {
         priorities.pop();
     }
 
-    var destGroup = prioritize(priorities);
+    const destGroup = prioritize(priorities);
     if (!destGroup) {
         return null;
     }
 
-    var dest = null;
+    let dest = null;
     if (
         config.rememberSource &&
         config.previous &&
         config.previous.destination === target &&
         config.previous.reverse === direction
     ) {
-        for (var j = 0; j < destGroup.length; j++) {
+        for (let j = 0; j < destGroup.length; j++) {
             if (destGroup[j].element === config.previous.target) {
                 dest = destGroup[j].element;
                 break;
@@ -395,11 +397,11 @@ function navigate(target, direction, candidates, config) {
     return dest;
 }
 
-/********************/
+/** ***************** */
 /* Private Function */
-/********************/
+/** ***************** */
 function generateId() {
-    var id;
+    let id;
     while (true) {
         id = ID_POOL_PREFIX + String(++_idPool);
         if (!_sections[id]) {
@@ -410,7 +412,7 @@ function generateId() {
 }
 
 function parseSelector(selector) {
-    var result;
+    let result;
     if (typeof selector === 'string') {
         result = [].slice.call(document.querySelectorAll(selector));
     } else if (typeof selector === 'object' && selector.length) {
@@ -426,16 +428,18 @@ function parseSelector(selector) {
 function matchSelector(elem, selector) {
     if (typeof selector === 'string') {
         return elementMatchesSelector.call(elem, selector);
-    } else if (typeof selector === 'object' && selector.length) {
+    }
+    if (typeof selector === 'object' && selector.length) {
         return selector.indexOf(elem) >= 0;
-    } else if (typeof selector === 'object' && selector.nodeType === 1) {
+    }
+    if (typeof selector === 'object' && selector.nodeType === 1) {
         return elem === selector;
     }
     return false;
 }
 
 function getCurrentFocusedElement() {
-    var activeElement = document.activeElement;
+    const { activeElement } = document;
     if (activeElement && activeElement !== document.body) {
         return activeElement;
     }
@@ -443,11 +447,11 @@ function getCurrentFocusedElement() {
 
 function extend(out) {
     out = out || {};
-    for (var i = 1; i < arguments.length; i++) {
+    for (let i = 1; i < arguments.length; i++) {
         if (!arguments[i]) {
             continue;
         }
-        for (var key in arguments[i]) {
+        for (const key in arguments[i]) {
             if (arguments[i].hasOwnProperty(key) && arguments[i][key] !== undefined) {
                 out[key] = arguments[i][key];
             }
@@ -492,7 +496,7 @@ function isNavigable(elem, sectionId, verifySectionSelector) {
 }
 
 function getSectionId(elem) {
-    for (var id in _sections) {
+    for (const id in _sections) {
         if (!_sections[id].disabled && matchSelector(elem, _sections[id].selector)) {
             return id;
         }
@@ -506,7 +510,7 @@ function getSectionNavigableElements(sectionId) {
 }
 
 function getSectionDefaultElement(sectionId) {
-    var defaultElement = _sections[sectionId].defaultElement;
+    let { defaultElement } = _sections[sectionId];
     if (!defaultElement) {
         return null;
     }
@@ -520,7 +524,7 @@ function getSectionDefaultElement(sectionId) {
 }
 
 function getSectionLastFocusedElement(sectionId) {
-    var lastFocusedElement = _sections[sectionId].lastFocusedElement;
+    const { lastFocusedElement } = _sections[sectionId];
     if (!isNavigable(lastFocusedElement, sectionId, true)) {
         return null;
     }
@@ -531,7 +535,7 @@ function fireEvent(elem, type, details, cancelable) {
     if (arguments.length < 4) {
         cancelable = true;
     }
-    var evt = document.createEvent('CustomEvent');
+    const evt = document.createEvent('CustomEvent');
     evt.initCustomEvent(EVENT_PREFIX + type, true, cancelable, details);
     return elem.dispatchEvent(evt);
 }
@@ -541,9 +545,9 @@ function focusElement(elem, sectionId, direction) {
         return false;
     }
 
-    var currentFocusedElement = getCurrentFocusedElement();
+    const currentFocusedElement = getCurrentFocusedElement();
 
-    var silentFocus = function() {
+    const silentFocus = function() {
         if (currentFocusedElement) {
             currentFocusedElement.blur();
         }
@@ -565,10 +569,10 @@ function focusElement(elem, sectionId, direction) {
     }
 
     if (currentFocusedElement) {
-        var unfocusProperties = {
+        const unfocusProperties = {
             nextElement: elem,
             nextSectionId: sectionId,
-            direction: direction,
+            direction,
             native: false,
         };
         if (!fireEvent(currentFocusedElement, 'willunfocus', unfocusProperties)) {
@@ -579,10 +583,10 @@ function focusElement(elem, sectionId, direction) {
         fireEvent(currentFocusedElement, 'unfocused', unfocusProperties, false);
     }
 
-    var focusProperties = {
+    const focusProperties = {
         previousElement: currentFocusedElement,
-        sectionId: sectionId,
-        direction: direction,
+        sectionId,
+        direction,
         native: false,
     };
     if (!fireEvent(elem, 'willfocus', focusProperties)) {
@@ -612,25 +616,24 @@ function focusExtendedSelector(selector, direction) {
     if (selector.charAt(0) == '@') {
         if (selector.length == 1) {
             return focusSection();
-        } else {
-            var sectionId = selector.substr(1);
-            return focusSection(sectionId);
         }
-    } else {
-        var next = parseSelector(selector)[0];
-        if (next) {
-            var nextSectionId = getSectionId(next);
-            if (isNavigable(next, nextSectionId)) {
-                return focusElement(next, nextSectionId, direction);
-            }
+        const sectionId = selector.substr(1);
+        return focusSection(sectionId);
+    }
+    const next = parseSelector(selector)[0];
+    if (next) {
+        const nextSectionId = getSectionId(next);
+        if (isNavigable(next, nextSectionId)) {
+            return focusElement(next, nextSectionId, direction);
         }
     }
+
     return false;
 }
 
 function focusSection(sectionId) {
-    var range = [];
-    var addRange = function(id) {
+    const range = [];
+    const addRange = function(id) {
         if (id && range.indexOf(id) < 0 && _sections[id] && !_sections[id].disabled) {
             range.push(id);
         }
@@ -644,8 +647,8 @@ function focusSection(sectionId) {
         Object.keys(_sections).map(addRange);
     }
 
-    for (var i = 0; i < range.length; i++) {
-        var id = range[i];
+    for (let i = 0; i < range.length; i++) {
+        const id = range[i];
         var next;
 
         if (_sections[id].enterTo == 'last-focused') {
@@ -669,7 +672,7 @@ function fireNavigatefailed(elem, direction) {
         elem,
         'navigatefailed',
         {
-            direction: direction,
+            direction,
         },
         false,
     );
@@ -677,7 +680,7 @@ function fireNavigatefailed(elem, direction) {
 
 function gotoLeaveFor(sectionId, direction) {
     if (_sections[sectionId].leaveFor && _sections[sectionId].leaveFor[direction] !== undefined) {
-        var next = _sections[sectionId].leaveFor[direction];
+        const next = _sections[sectionId].leaveFor[direction];
 
         if (typeof next === 'string') {
             if (next === '') {
@@ -686,7 +689,7 @@ function gotoLeaveFor(sectionId, direction) {
             return focusExtendedSelector(next, direction);
         }
 
-        var nextSectionId = getSectionId(next);
+        const nextSectionId = getSectionId(next);
         if (isNavigable(next, nextSectionId)) {
             return focusElement(next, nextSectionId, direction);
         }
@@ -695,7 +698,7 @@ function gotoLeaveFor(sectionId, direction) {
 }
 
 function focusNext(direction, currentFocusedElement, currentSectionId) {
-    var extSelector = currentFocusedElement.getAttribute('data-sn-' + direction);
+    const extSelector = currentFocusedElement.getAttribute(`data-sn-${direction}`);
     if (typeof extSelector === 'string') {
         if (extSelector === '' || !focusExtendedSelector(extSelector, direction)) {
             fireNavigatefailed(currentFocusedElement, direction);
@@ -704,18 +707,18 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
         return true;
     }
 
-    var sectionNavigableElements = {};
-    var allNavigableElements = [];
-    for (var id in _sections) {
+    const sectionNavigableElements = {};
+    let allNavigableElements = [];
+    for (const id in _sections) {
         sectionNavigableElements[id] = getSectionNavigableElements(id);
         allNavigableElements = allNavigableElements.concat(sectionNavigableElements[id]);
     }
 
-    var config = extend({}, GlobalConfig, _sections[currentSectionId]);
-    var next;
+    const config = extend({}, GlobalConfig, _sections[currentSectionId]);
+    let next;
 
     if (config.restrict == 'self-only' || config.restrict == 'self-first') {
-        var currentSectionNavigableElements = sectionNavigableElements[currentSectionId];
+        const currentSectionNavigableElements = sectionNavigableElements[currentSectionId];
 
         next = navigate(
             currentFocusedElement,
@@ -743,18 +746,19 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
             reverse: REVERSE[direction],
         };
 
-        var nextSectionId = getSectionId(next);
+        const nextSectionId = getSectionId(next);
 
         if (currentSectionId != nextSectionId) {
-            var result = gotoLeaveFor(currentSectionId, direction);
+            const result = gotoLeaveFor(currentSectionId, direction);
             if (result) {
                 return true;
-            } else if (result === null) {
+            }
+            if (result === null) {
                 fireNavigatefailed(currentFocusedElement, direction);
                 return false;
             }
 
-            var enterToElement;
+            let enterToElement;
             switch (_sections[nextSectionId].enterTo) {
                 case 'last-focused':
                     enterToElement =
@@ -770,7 +774,8 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
         }
 
         return focusElement(next, nextSectionId, direction);
-    } else if (gotoLeaveFor(currentSectionId, direction)) {
+    }
+    if (gotoLeaveFor(currentSectionId, direction)) {
         return true;
     }
 
@@ -783,14 +788,14 @@ function onKeyDown(evt) {
         return;
     }
 
-    var currentFocusedElement;
-    var preventDefault = function() {
+    let currentFocusedElement;
+    const preventDefault = function() {
         evt.preventDefault();
         evt.stopPropagation();
         return false;
     };
 
-    var direction = KEYMAPPING[evt.keyCode];
+    const direction = KEYMAPPING[evt.keyCode];
     if (!direction) {
         if (evt.keyCode == 13) {
             currentFocusedElement = getCurrentFocusedElement();
@@ -815,13 +820,13 @@ function onKeyDown(evt) {
         }
     }
 
-    var currentSectionId = getSectionId(currentFocusedElement);
+    const currentSectionId = getSectionId(currentFocusedElement);
     if (!currentSectionId) {
         return;
     }
 
-    var willmoveProperties = {
-        direction: direction,
+    const willmoveProperties = {
+        direction,
         sectionId: currentSectionId,
         cause: 'keydown',
     };
@@ -838,7 +843,7 @@ function onKeyUp(evt) {
         return;
     }
     if (!_pause && _sectionCount && evt.keyCode == 13) {
-        var currentFocusedElement = getCurrentFocusedElement();
+        const currentFocusedElement = getCurrentFocusedElement();
         if (currentFocusedElement && getSectionId(currentFocusedElement)) {
             if (!fireEvent(currentFocusedElement, 'enter-up')) {
                 evt.preventDefault();
@@ -849,17 +854,17 @@ function onKeyUp(evt) {
 }
 
 function onFocus(evt) {
-    var target = evt.target;
+    const { target } = evt;
     if (target !== window && target !== document && _sectionCount && !_duringFocusChange) {
-        var sectionId = getSectionId(target);
+        const sectionId = getSectionId(target);
         if (sectionId) {
             if (_pause) {
                 focusChanged(target, sectionId);
                 return;
             }
 
-            var focusProperties = {
-                sectionId: sectionId,
+            const focusProperties = {
+                sectionId,
                 native: true,
             };
 
@@ -876,7 +881,7 @@ function onFocus(evt) {
 }
 
 function onBlur(evt) {
-    var target = evt.target;
+    const { target } = evt;
     if (
         target !== window &&
         target !== document &&
@@ -885,7 +890,7 @@ function onBlur(evt) {
         !_duringFocusChange &&
         getSectionId(target)
     ) {
-        var unfocusProperties = {
+        const unfocusProperties = {
             native: true,
         };
         if (!fireEvent(target, 'willunfocus', unfocusProperties)) {
@@ -900,11 +905,11 @@ function onBlur(evt) {
     }
 }
 
-/*******************/
+/** **************** */
 /* Public Function */
-/*******************/
+/** **************** */
 var SpatialNavigation = {
-    init: function() {
+    init() {
         if (!_ready) {
             window.addEventListener('keydown', onKeyDown);
             window.addEventListener('keyup', onKeyUp);
@@ -914,7 +919,7 @@ var SpatialNavigation = {
         }
     },
 
-    uninit: function() {
+    uninit() {
         window.removeEventListener('blur', onBlur, true);
         window.removeEventListener('focus', onFocus, true);
         window.removeEventListener('keyup', onKeyUp);
@@ -924,7 +929,7 @@ var SpatialNavigation = {
         _ready = false;
     },
 
-    clear: function() {
+    clear() {
         _sections = {};
         _sectionCount = 0;
         _defaultSectionId = '';
@@ -934,8 +939,9 @@ var SpatialNavigation = {
 
     // set(<config>);
     // set(<sectionId>, <config>);
-    set: function() {
-        var sectionId, config;
+    set() {
+        let sectionId;
+        let config;
 
         if (typeof arguments[0] === 'object') {
             config = arguments[0];
@@ -943,13 +949,13 @@ var SpatialNavigation = {
             sectionId = arguments[0];
             config = arguments[1];
             if (!_sections[sectionId]) {
-                throw new Error('Section "' + sectionId + '" doesn\'t exist!');
+                throw new Error(`Section "${sectionId}" doesn't exist!`);
             }
         } else {
             return;
         }
 
-        for (var key in config) {
+        for (const key in config) {
             if (GlobalConfig[key] !== undefined) {
                 if (sectionId) {
                     _sections[sectionId][key] = config[key];
@@ -967,9 +973,9 @@ var SpatialNavigation = {
 
     // add(<config>);
     // add(<sectionId>, <config>);
-    add: function() {
-        var sectionId;
-        var config = {};
+    add() {
+        let sectionId;
+        let config = {};
 
         if (typeof arguments[0] === 'object') {
             config = arguments[0];
@@ -983,7 +989,7 @@ var SpatialNavigation = {
         }
 
         if (_sections[sectionId]) {
-            throw new Error('Section "' + sectionId + '" has already existed!');
+            throw new Error(`Section "${sectionId}" has already existed!`);
         }
 
         _sections[sectionId] = {};
@@ -994,7 +1000,7 @@ var SpatialNavigation = {
         return sectionId;
     },
 
-    remove: function(sectionId) {
+    remove(sectionId) {
         if (!sectionId || typeof sectionId !== 'string') {
             throw new Error('Please assign the "sectionId"!');
         }
@@ -1010,7 +1016,7 @@ var SpatialNavigation = {
         return false;
     },
 
-    disable: function(sectionId) {
+    disable(sectionId) {
         if (_sections[sectionId]) {
             _sections[sectionId].disabled = true;
             return true;
@@ -1018,7 +1024,7 @@ var SpatialNavigation = {
         return false;
     },
 
-    enable: function(sectionId) {
+    enable(sectionId) {
         if (_sections[sectionId]) {
             _sections[sectionId].disabled = false;
             return true;
@@ -1026,11 +1032,11 @@ var SpatialNavigation = {
         return false;
     },
 
-    pause: function() {
+    pause() {
         _pause = true;
     },
 
-    resume: function() {
+    resume() {
         _pause = false;
     },
 
@@ -1038,15 +1044,15 @@ var SpatialNavigation = {
     // focus(<sectionId>, [silent])
     // focus(<extSelector>, [silent])
     // Note: "silent" is optional and default to false
-    focus: function(elem, silent) {
-        var result = false;
+    focus(elem, silent) {
+        let result = false;
 
         if (silent === undefined && typeof elem === 'boolean') {
             silent = elem;
             elem = undefined;
         }
 
-        var autoPause = !_pause && silent;
+        const autoPause = !_pause && silent;
 
         if (autoPause) {
             SpatialNavigation.pause();
@@ -1054,18 +1060,16 @@ var SpatialNavigation = {
 
         if (!elem) {
             result = focusSection();
-        } else {
-            if (typeof elem === 'string') {
-                if (_sections[elem]) {
-                    result = focusSection(elem);
-                } else {
-                    result = focusExtendedSelector(elem);
-                }
+        } else if (typeof elem === 'string') {
+            if (_sections[elem]) {
+                result = focusSection(elem);
             } else {
-                var nextSectionId = getSectionId(elem);
-                if (isNavigable(elem, nextSectionId)) {
-                    result = focusElement(elem, nextSectionId);
-                }
+                result = focusExtendedSelector(elem);
+            }
+        } else {
+            const nextSectionId = getSectionId(elem);
+            if (isNavigable(elem, nextSectionId)) {
+                result = focusElement(elem, nextSectionId);
             }
         }
 
@@ -1078,25 +1082,25 @@ var SpatialNavigation = {
 
     // move(<direction>)
     // move(<direction>, <selector>)
-    move: function(direction, selector) {
+    move(direction, selector) {
         direction = direction.toLowerCase();
         if (!REVERSE[direction]) {
             return false;
         }
 
-        var elem = selector ? parseSelector(selector)[0] : getCurrentFocusedElement();
+        const elem = selector ? parseSelector(selector)[0] : getCurrentFocusedElement();
         if (!elem) {
             return false;
         }
 
-        var sectionId = getSectionId(elem);
+        const sectionId = getSectionId(elem);
         if (!sectionId) {
             return false;
         }
 
-        var willmoveProperties = {
-            direction: direction,
-            sectionId: sectionId,
+        const willmoveProperties = {
+            direction,
+            sectionId,
             cause: 'api',
         };
 
@@ -1109,9 +1113,9 @@ var SpatialNavigation = {
 
     // makeFocusable()
     // makeFocusable(<sectionId>)
-    makeFocusable: function(sectionId) {
-        var doMakeFocusable = function(section) {
-            var tabIndexIgnoreList =
+    makeFocusable(sectionId) {
+        const doMakeFocusable = function(section) {
+            const tabIndexIgnoreList =
                 section.tabIndexIgnoreList !== undefined ? section.tabIndexIgnoreList : GlobalConfig.tabIndexIgnoreList;
             parseSelector(section.selector).forEach(function(elem) {
                 if (!matchSelector(elem, tabIndexIgnoreList)) {
@@ -1126,20 +1130,20 @@ var SpatialNavigation = {
             if (_sections[sectionId]) {
                 doMakeFocusable(_sections[sectionId]);
             } else {
-                throw new Error('Section "' + sectionId + '" doesn\'t exist!');
+                throw new Error(`Section "${sectionId}" doesn't exist!`);
             }
         } else {
-            for (var id in _sections) {
+            for (const id in _sections) {
                 doMakeFocusable(_sections[id]);
             }
         }
     },
 
-    setDefaultSection: function(sectionId) {
+    setDefaultSection(sectionId) {
         if (!sectionId) {
             _defaultSectionId = '';
         } else if (!_sections[sectionId]) {
-            throw new Error('Section "' + sectionId + '" doesn\'t exist!');
+            throw new Error(`Section "${sectionId}" doesn't exist!`);
         } else {
             _defaultSectionId = sectionId;
         }
@@ -1148,9 +1152,9 @@ var SpatialNavigation = {
 
 window.SpatialNavigation = SpatialNavigation;
 
-/**********************/
+/** ******************* */
 /* CommonJS Interface */
-/**********************/
+/** ******************* */
 if (typeof module === 'object') {
     module.exports = SpatialNavigation;
 }
