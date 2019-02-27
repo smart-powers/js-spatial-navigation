@@ -6,17 +6,16 @@
  *
  * Licensed under the MPL 2.0.
  */
-;(function($) {
+;(function() {
   'use strict';
 
   /************************/
   /* Global Configuration */
   /************************/
   // Note: an <extSelector> can be one of following types:
-  // - a valid selector string for "querySelectorAll" or jQuery (if it exists)
+  // - a valid selector string for "querySelectorAll"
   // - a NodeList or an array containing DOM elements
   // - a single DOM element
-  // - a jQuery object
   // - a string "@<sectionId>" to indicate the specified section
   // - a string "@" to indicate the default section
   var GlobalConfig = {
@@ -450,9 +449,7 @@
 
   function parseSelector(selector) {
     var result;
-    if ($) {
-      result = $(selector).get();
-    } else if (typeof selector === 'string') {
+    if (typeof selector === 'string') {
       result = [].slice.call(document.querySelectorAll(selector));
     } else if (typeof selector === 'object' && selector.length) {
       result = [].slice.call(selector);
@@ -465,9 +462,7 @@
   }
 
   function matchSelector(elem, selector) {
-    if ($) {
-      return $(elem).is(selector);
-    } else if (typeof selector === 'string') {
+    if (typeof selector === 'string') {
       return elementMatchesSelector.call(elem, selector);
     } else if (typeof selector === 'object' && selector.length) {
       return selector.indexOf(elem) >= 0;
@@ -560,8 +555,6 @@
     }
     if (typeof defaultElement === 'string') {
       defaultElement = parseSelector(defaultElement)[0];
-    } else if ($ && defaultElement instanceof $) {
-      defaultElement = defaultElement.get(0);
     }
     if (isNavigable(defaultElement, sectionId, true)) {
       return defaultElement;
@@ -733,10 +726,6 @@
           return null;
         }
         return focusExtendedSelector(next, direction);
-      }
-
-      if ($ && next instanceof $) {
-        next = next.get(0);
       }
 
       var nextSectionId = getSectionId(next);
@@ -1122,10 +1111,6 @@
             result = focusExtendedSelector(elem);
           }
         } else {
-          if ($ && elem instanceof $) {
-            elem = elem.get(0);
-          }
-
           var nextSectionId = getSectionId(elem);
           if (isNavigable(elem, nextSectionId)) {
             result = focusElement(elem, nextSectionId);
@@ -1212,7 +1197,7 @@
   };
 
   window.SpatialNavigation = SpatialNavigation;
-  
+
   /**********************/
   /* CommonJS Interface */
   /**********************/
@@ -1220,47 +1205,4 @@
       module.exports = SpatialNavigation;
   }
 
-  /********************/
-  /* jQuery Interface */
-  /********************/
-  if ($) {
-    $.SpatialNavigation = function() {
-      SpatialNavigation.init();
-
-      if (arguments.length > 0) {
-        if ($.isPlainObject(arguments[0])) {
-          return SpatialNavigation.add(arguments[0]);
-        } else if ($.type(arguments[0]) === 'string' &&
-                   $.isFunction(SpatialNavigation[arguments[0]])) {
-          return SpatialNavigation[arguments[0]]
-            .apply(SpatialNavigation, [].slice.call(arguments, 1));
-        }
-      }
-
-      return $.extend({}, SpatialNavigation);
-    };
-
-    $.fn.SpatialNavigation = function() {
-      var config;
-
-      if ($.isPlainObject(arguments[0])) {
-        config = arguments[0];
-      } else {
-        config = {
-          id: arguments[0]
-        };
-      }
-
-      config.selector = this;
-
-      SpatialNavigation.init();
-      if (config.id) {
-        SpatialNavigation.remove(config.id);
-      }
-      SpatialNavigation.add(config);
-      SpatialNavigation.makeFocusable(config.id);
-
-      return this;
-    };
-  }
-})(window.jQuery);
+})();

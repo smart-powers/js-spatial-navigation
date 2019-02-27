@@ -53,24 +53,6 @@ Examples
 </body>
 ```
 
-### Integrate jQuery
-
-Although SpatialNavigation is a standalone (pure-javascript-based) library, it can work perfectly with jQuery.
-
-```html
-<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
-<script>
-  $.getScript('https://luke-chang.github.io/js-spatial-navigation/spatial_navigation.js', function() {
-    $('a, .focusable')
-      .SpatialNavigation()
-      .focus(function() { $(this).css('outline', '2px solid red'); })
-      .blur(function() { $(this).css('outline', ''); })
-      .first()
-      .focus();
-  });
-</script>
-```
-
 ### More Demonstrations
 
 + [Demonstrations](https://luke-chang.github.io/js-spatial-navigation/demo/)
