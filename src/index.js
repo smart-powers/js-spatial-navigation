@@ -1,4 +1,4 @@
-/*
+/**
  * A javascript-based implementation of Spatial Navigation.
  *
  * Copyright (c) 2017 Luke Chang.
@@ -7,15 +7,17 @@
  * Licensed under the MPL 2.0.
  */
 
-/** ********************* */
-/* Global Configuration */
-/** ********************* */
-// Note: an <extSelector> can be one of following types:
-// - a valid selector string for "querySelectorAll"
-// - a NodeList or an array containing DOM elements
-// - a single DOM element
-// - a string "@<sectionId>" to indicate the specified section
-// - a string "@" to indicate the default section
+/**
+ * Global Configuration
+ *
+ * NOTE: an <extSelector> can be one of following types:
+ *  - a valid selector string for "querySelectorAll"
+ *  - a NodeList or an array containing DOM elements
+ *  - a single DOM element
+ *  - a string "@<sectionId>" to indicate the specified section
+ *  - a string "@" to indicate the default section
+ */
+
 const GlobalConfig = {
     selector: '', // can be a valid <extSelector> except "@" syntax.
     straightOnly: false,
@@ -31,9 +33,9 @@ const GlobalConfig = {
     navigableFilter: null,
 };
 
-/** ****************** */
-/* Constant Variable */
-/** ****************** */
+/**
+ * Constant Variable
+ */
 const KEYMAPPING = {
     '37': 'left',
     '38': 'up',
@@ -51,9 +53,9 @@ const REVERSE = {
 const EVENT_PREFIX = 'sn:';
 const ID_POOL_PREFIX = 'section-';
 
-/** ***************** */
-/* Private Variable */
-/** ***************** */
+/**
+ * Private Variable
+ */
 let _idPool = 0;
 let _ready = false;
 let _pause = false;
@@ -63,9 +65,9 @@ let _defaultSectionId = '';
 let _lastSectionId = '';
 let _duringFocusChange = false;
 
-/** ********* */
-/* Polyfill */
-/** ********* */
+/**
+ * Polyfill
+ */
 const elementMatchesSelector =
     Element.prototype.matches ||
     Element.prototype.matchesSelector ||
@@ -78,9 +80,9 @@ const elementMatchesSelector =
         return [].slice.call(matchedNodes).indexOf(this) >= 0;
     };
 
-/** ************** */
-/* Core Function */
-/** ************** */
+/**
+ * Core Function
+ */
 function getRect(elem) {
     const cr = elem.getBoundingClientRect();
     const rect = {
@@ -396,9 +398,9 @@ function navigate(target, direction, candidates, config) {
     return dest;
 }
 
-/** ***************** */
-/* Private Function */
-/** ***************** */
+/**
+ * Private Function
+ */
 function generateId() {
     let id;
     while (true) {
@@ -904,9 +906,9 @@ function onBlur(evt) {
     }
 }
 
-/** **************** */
-/* Public Function */
-/** **************** */
+/**
+ * Public Function
+ */
 const SpatialNavigation = {
     init() {
         if (!_ready) {
@@ -1151,9 +1153,9 @@ const SpatialNavigation = {
 
 window.SpatialNavigation = SpatialNavigation;
 
-/** ******************* */
-/* CommonJS Interface */
-/** ******************* */
+/**
+ * CommonJS Interface
+ */
 if (typeof module === 'object') {
     module.exports = SpatialNavigation;
 }
