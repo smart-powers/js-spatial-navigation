@@ -6,8 +6,6 @@
  *
  * Licensed under the MPL 2.0.
  */
-;(function() {
-  'use strict';
 
   /************************/
   /* Global Configuration */
@@ -1204,5 +1202,3 @@
   if (typeof module === 'object') {
       module.exports = SpatialNavigation;
   }
-
-})();
