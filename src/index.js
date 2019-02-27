@@ -1012,15 +1012,14 @@ const SpatialNavigation = {
 
     // set(<config>);
     // set(<sectionId>, <config>);
-    set() {
+    set(...args) {
         let sectionId;
         let config;
 
-        if (typeof arguments[0] === 'object') {
-            config = arguments[0];
-        } else if (typeof arguments[0] === 'string' && typeof arguments[1] === 'object') {
-            sectionId = arguments[0];
-            config = arguments[1];
+        if (typeof args[0] === 'object') {
+            [config] = args;
+        } else if (typeof args[0] === 'string' && typeof args[1] === 'object') {
+            [sectionId, config] = args;
 
             if (!_sections[sectionId]) {
                 throw new Error(`Section "${sectionId}" doesn't exist!`);
@@ -1047,15 +1046,14 @@ const SpatialNavigation = {
 
     // add(<config>);
     // add(<sectionId>, <config>);
-    add() {
+    add(...args) {
         let sectionId;
         let config = {};
 
-        if (typeof arguments[0] === 'object') {
-            config = arguments[0];
-        } else if (typeof arguments[0] === 'string' && typeof arguments[1] === 'object') {
-            sectionId = arguments[0];
-            config = arguments[1];
+        if (typeof args[0] === 'object') {
+            [config] = args;
+        } else if (typeof args[0] === 'string' && typeof args[1] === 'object') {
+            [sectionId, config] = args;
         }
 
         if (!sectionId) {
@@ -1067,7 +1065,7 @@ const SpatialNavigation = {
         }
 
         _sections[sectionId] = {};
-        _sectionCount++;
+        _sectionCount += 1;
 
         SpatialNavigation.set(sectionId, config);
 
