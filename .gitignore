@@ -1,6 +1,10 @@
 # dependencies
 node_modules
 
+# production
+es
+lib
+
 # misc
 .idea
 .DS_Store
