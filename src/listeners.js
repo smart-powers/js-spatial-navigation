@@ -1,4 +1,4 @@
-import { KEYMAPPING } from './constants';
+import { globalConfig } from './globalConfig';
 import {
     fireEvent,
     focusChanged,
@@ -21,10 +21,10 @@ export function onKeyDown(evt) {
         evt.stopPropagation();
     };
 
-    const direction = KEYMAPPING[evt.keyCode];
+    const direction = globalConfig.directionKeys[evt.keyCode];
 
     if (!direction) {
-        if (evt.keyCode === 13) {
+        if (evt.keyCode === globalConfig.enterKey) {
             currentFocusedElement = getCurrentFocusedElement();
 
             if (currentFocusedElement && getSectionId(currentFocusedElement)) {
@@ -76,7 +76,7 @@ export function onKeyUp(evt) {
         return;
     }
 
-    if (!store.pause && store.sectionCount && evt.keyCode === 13) {
+    if (!store.pause && store.sectionCount && evt.keyCode === globalConfig.enterKey) {
         const currentFocusedElement = getCurrentFocusedElement();
 
         if (currentFocusedElement && getSectionId(currentFocusedElement)) {
