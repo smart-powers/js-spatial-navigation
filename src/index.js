@@ -9,6 +9,7 @@
 
 import { EVENT_PREFIX, ID_POOL_PREFIX, KEYMAPPING, REVERSE } from './constants';
 import { navigate } from './navigate';
+import { store } from './store';
 
 /**
  * Global Configuration
@@ -32,20 +33,6 @@ const globalConfig = {
     restrict: 'self-first', // 'self-first', 'self-only', 'none'
     tabIndexIgnoreList: 'a, input, select, textarea, button, iframe, [contentEditable=true]',
     navigableFilter: null,
-};
-
-/**
- * Private data
- */
-const store = {
-    idPool: 0,
-    ready: false,
-    pause: false,
-    sections: {},
-    sectionCount: 0,
-    defaultSectionId: '',
-    lastSectionId: '',
-    duringFocusChange: false,
 };
 
 /**
