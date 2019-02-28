@@ -71,12 +71,10 @@ const elementMatchesSelector =
 function generateId() {
     let id;
 
-    while (true) {
-        id = ID_POOL_PREFIX + String(++store.idPool);
-        if (!store.sections[id]) {
-            break;
-        }
-    }
+    do {
+        store.idPool += 1;
+        id = ID_POOL_PREFIX + String(store.idPool);
+    } while (!store.sections[id]);
 
     return id;
 }
@@ -453,6 +451,10 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
                     enterToElement = getSectionDefaultElement(nextSectionId);
                     break;
                 }
+
+                default: {
+                    break;
+                }
             }
 
             if (enterToElement) {
@@ -474,14 +476,13 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
 
 function onKeyDown(evt) {
     if (!store.sectionCount || store.pause || evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) {
-        return null;
+        return;
     }
 
     let currentFocusedElement;
     const preventDefault = () => {
         evt.preventDefault();
         evt.stopPropagation();
-        return false;
     };
 
     const direction = KEYMAPPING[evt.keyCode];
@@ -492,12 +493,13 @@ function onKeyDown(evt) {
 
             if (currentFocusedElement && getSectionId(currentFocusedElement)) {
                 if (!fireEvent(currentFocusedElement, 'enter-down')) {
-                    return preventDefault();
+                    preventDefault();
+                    return;
                 }
             }
         }
 
-        return null;
+        return;
     }
 
     currentFocusedElement = getCurrentFocusedElement();
@@ -509,14 +511,15 @@ function onKeyDown(evt) {
 
         if (!currentFocusedElement) {
             focusSection();
-            return preventDefault();
+            preventDefault();
+            return;
         }
     }
 
     const currentSectionId = getSectionId(currentFocusedElement);
 
     if (!currentSectionId) {
-        return null;
+        return;
     }
 
     const willmoveProperties = {
@@ -529,12 +532,12 @@ function onKeyDown(evt) {
         focusNext(direction, currentFocusedElement, currentSectionId);
     }
 
-    return preventDefault();
+    preventDefault();
 }
 
 function onKeyUp(evt) {
     if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) {
-        return null;
+        return;
     }
 
     if (!store.pause && store.sectionCount && evt.keyCode === 13) {
