@@ -53,24 +53,6 @@ Examples
 </body>
 ```
 
-### Integrate jQuery
-
-Although SpatialNavigation is a standalone (pure-javascript-based) library, it can work perfectly with jQuery.
-
-```html
-<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
-<script>
-  $.getScript('https://luke-chang.github.io/js-spatial-navigation/spatial_navigation.js', function() {
-    $('a, .focusable')
-      .SpatialNavigation()
-      .focus(function() { $(this).css('outline', '2px solid red'); })
-      .blur(function() { $(this).css('outline', ''); })
-      .first()
-      .focus();
-  });
-</script>
-```
-
 ### More Demonstrations
 
 + [Demonstrations](https://luke-chang.github.io/js-spatial-navigation/demo/)
@@ -194,7 +176,14 @@ Following is an example with default values.
   leaveFor: null,
   restrict: 'self-first',
   tabIndexIgnoreList: 'a, input, select, textarea, button, iframe, [contentEditable=true]',
-  navigableFilter: null
+  navigableFilter: null,
+  directionKeys: {
+    '37': 'left',
+    '38': 'up',
+    '39': 'right',
+    '40': 'down'
+  },
+  enterKey: 13
 }
 ```
 
@@ -292,6 +281,14 @@ Elements matching `tabIndexIgnoreList` will never be affected by [`makeFocusable
 A callback function that accepts a DOM element as the first argument.
 
 SpatialNavigation calls this function every time when it tries to traverse every single candidate. You can ignore arbitrary elements by returning `false`.
+
+### `directionKeys`
+
+TBD...
+
+### `enterKey`
+
+TBD...
 
 ### Custom Attributes
 

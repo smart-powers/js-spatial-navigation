@@ -1,0 +1,46 @@
+{
+  "name": "@smart-powers/js-spatial-navigation",
+  "version": "0.4.0",
+  "description": "A javascript-based implementation of Spatial Navigation.",
+  "main": "lib/js-spatial-navigation.js",
+  "module": "es/js-spatial-navigation.js",
+  "scripts": {
+    "prepare": "npm run clean && npm run build",
+    "clean": "rimraf lib es demo/dist",
+    "build": "npm run clean && rollup -c rollup.config.js",
+    "start": "npm run build -- --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smart-powers/js-spatial-navigation.git"
+  },
+  "author": "Luke Chang",
+  "keywords": [
+    "spatial",
+    "navigation"
+  ],
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/smart-powers/js-spatial-navigation/issues"
+  },
+  "homepage": "https://github.com/smart-powers/js-spatial-navigation#readme",
+  "devDependencies": {
+    "@babel/cli": "7.2.3",
+    "@babel/core": "7.3.3",
+    "@babel/preset-env": "7.3.1",
+    "babel-eslint": "10.0.1",
+    "eslint": "5.14.1",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-prettier": "4.0.0",
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-prettier": "3.0.1",
+    "eslint-plugin-simple-import-sort": "3.0.0",
+    "prettier": "1.16.4",
+    "rimraf": "2.6.3",
+    "rollup": "1.2.3",
+    "rollup-plugin-babel": "4.3.2",
+    "rollup-plugin-node-resolve": "4.0.1",
+    "rollup-plugin-terser": "4.0.4"
+  }
+}
