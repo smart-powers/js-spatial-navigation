@@ -164,13 +164,7 @@ function isNavigable(elem, sectionId, verifySectionSelector) {
 }
 
 function getSectionId(elem) {
-    for (const id in _sections) {
-        if (!_sections[id].disabled && matchSelector(elem, _sections[id].selector)) {
-            return id;
-        }
-    }
-
-    return null;
+    return Object.keys(_sections).find(id => !_sections[id].disabled && matchSelector(elem, _sections[id].selector));
 }
 
 function getSectionNavigableElements(sectionId) {
@@ -306,7 +300,7 @@ function focusSection(sectionId) {
         Object.keys(_sections).map(addRange);
     }
 
-    for (let i = 0; i < range.length; i++) {
+    for (let i = 0; i < range.length; i += 1) {
         const id = range[i];
         let next;
 
@@ -391,10 +385,10 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
     const sectionNavigableElements = {};
     let allNavigableElements = [];
 
-    for (const id in _sections) {
+    Object.keys(_sections).forEach(id => {
         sectionNavigableElements[id] = getSectionNavigableElements(id);
         allNavigableElements = allNavigableElements.concat(sectionNavigableElements[id]);
-    }
+    });
 
     const config = { ...GlobalConfig, ..._sections[currentSectionId] };
     let next;
@@ -657,7 +651,7 @@ const SpatialNavigation = {
             return;
         }
 
-        for (const key in config) {
+        Object.keys(config).forEach(key => {
             if (GlobalConfig[key] !== undefined) {
                 if (sectionId) {
                     _sections[sectionId][key] = config[key];
@@ -665,7 +659,7 @@ const SpatialNavigation = {
                     GlobalConfig[key] = config[key];
                 }
             }
-        }
+        });
 
         if (sectionId) {
             // remove "undefined" items
@@ -845,9 +839,9 @@ const SpatialNavigation = {
                 throw new Error(`Section "${sectionId}" doesn't exist!`);
             }
         } else {
-            for (const id in _sections) {
+            Object.keys(_sections).forEach(id => {
                 doMakeFocusable(_sections[id]);
-            }
+            });
         }
     },
 
