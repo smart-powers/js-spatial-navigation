@@ -20,8 +20,7 @@ import { navigate } from './navigate';
  *  - a string "@<sectionId>" to indicate the specified section
  *  - a string "@" to indicate the default section
  */
-
-const GlobalConfig = {
+const globalConfig = {
     selector: '', // can be a valid <extSelector> except "@" syntax.
     straightOnly: false,
     straightOverlapThreshold: 0.5,
@@ -29,15 +28,14 @@ const GlobalConfig = {
     disabled: false,
     defaultElement: '', // <extSelector> except "@" syntax.
     enterTo: '', // '', 'last-focused', 'default-element'
-    leaveFor: null, // {left: <extSelector>, right: <extSelector>,
-    //  up: <extSelector>, down: <extSelector>}
+    leaveFor: null, // { left: <extSelector>, right: <extSelector>, up: <extSelector>, down: <extSelector> }
     restrict: 'self-first', // 'self-first', 'self-only', 'none'
     tabIndexIgnoreList: 'a, input, select, textarea, button, iframe, [contentEditable=true]',
     navigableFilter: null,
 };
 
 /**
- * Private Variable
+ * Private data
  */
 const store = {
     idPool: 0,
@@ -154,8 +152,8 @@ function isNavigable(elem, sectionId, verifySectionSelector) {
         if (store.sections[sectionId].navigableFilter(elem, sectionId) === false) {
             return false;
         }
-    } else if (typeof GlobalConfig.navigableFilter === 'function') {
-        if (GlobalConfig.navigableFilter(elem, sectionId) === false) {
+    } else if (typeof globalConfig.navigableFilter === 'function') {
+        if (globalConfig.navigableFilter(elem, sectionId) === false) {
             return false;
         }
     }
@@ -392,7 +390,7 @@ function focusNext(direction, currentFocusedElement, currentSectionId) {
         allNavigableElements = allNavigableElements.concat(sectionNavigableElements[id]);
     });
 
-    const config = { ...GlobalConfig, ...store.sections[currentSectionId] };
+    const config = { ...globalConfig, ...store.sections[currentSectionId] };
     let next;
 
     if (config.restrict === 'self-only' || config.restrict === 'self-first') {
@@ -659,11 +657,11 @@ const SpatialNavigation = {
         }
 
         Object.keys(config).forEach(key => {
-            if (GlobalConfig[key] !== undefined) {
+            if (globalConfig[key] !== undefined) {
                 if (sectionId) {
                     store.sections[sectionId][key] = config[key];
                 } else if (config[key] !== undefined) {
-                    GlobalConfig[key] = config[key];
+                    globalConfig[key] = config[key];
                 }
             }
         });
@@ -828,7 +826,7 @@ const SpatialNavigation = {
     makeFocusable(sectionId) {
         const doMakeFocusable = section => {
             const tabIndexIgnoreList =
-                section.tabIndexIgnoreList !== undefined ? section.tabIndexIgnoreList : GlobalConfig.tabIndexIgnoreList;
+                section.tabIndexIgnoreList !== undefined ? section.tabIndexIgnoreList : globalConfig.tabIndexIgnoreList;
 
             parseSelector(section.selector).forEach(elem => {
                 if (!matchSelector(elem, tabIndexIgnoreList)) {
