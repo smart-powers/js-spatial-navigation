@@ -1,6 +1,6 @@
 {
   "name": "@smart-powers/js-spatial-navigation",
-  "version": "1.0.0",
+  "version": "0.3.2",
   "description": "A javascript-based implementation of Spatial Navigation.",
   "main": "lib/js-spatial-navigation.js",
   "module": "es/js-spatial-navigation.js",
