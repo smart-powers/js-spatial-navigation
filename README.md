@@ -176,7 +176,14 @@ Following is an example with default values.
   leaveFor: null,
   restrict: 'self-first',
   tabIndexIgnoreList: 'a, input, select, textarea, button, iframe, [contentEditable=true]',
-  navigableFilter: null
+  navigableFilter: null,
+  directionKeys: {
+    '37': 'left',
+    '38': 'up',
+    '39': 'right',
+    '40': 'down'
+  },
+  enterKey: 13
 }
 ```
 
@@ -274,6 +281,14 @@ Elements matching `tabIndexIgnoreList` will never be affected by [`makeFocusable
 A callback function that accepts a DOM element as the first argument.
 
 SpatialNavigation calls this function every time when it tries to traverse every single candidate. You can ignore arbitrary elements by returning `false`.
+
+### `directionKeys`
+
+TBD...
+
+### `enterKey`
+
+TBD...
 
 ### Custom Attributes
 
