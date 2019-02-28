@@ -15,6 +15,7 @@ module.exports = {
         'simple-import-sort/sort': 'error',
         'import/prefer-default-export': 'off',
         'prettier/prettier': 'error',
+        'no-param-reassign': 'off',
     },
     env: {
         browser: true,
