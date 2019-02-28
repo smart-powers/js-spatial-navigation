@@ -20,4 +20,11 @@ export const globalConfig = {
     restrict: 'self-first', // 'self-first', 'self-only', 'none'
     tabIndexIgnoreList: 'a, input, select, textarea, button, iframe, [contentEditable=true]',
     navigableFilter: null,
+    directionKeys: {
+        '37': 'left',
+        '38': 'up',
+        '39': 'right',
+        '40': 'down',
+    },
+    enterKey: 13,
 };
