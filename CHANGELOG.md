@@ -8,11 +8,11 @@
 
 ## 0.4.0 (February 28, 2019)
 
-* Add rollup ([@immuzov](https://github.com/immuzov) in #3).
-* Add eslint and prettier ([@immuzov](https://github.com/immuzov) in #4).
-* Remove jquery ([@immuzov](https://github.com/immuzov) in #7).
-* Reformat code ([@immuzov](https://github.com/immuzov) in #8).
-* Add customized keys ([@immuzov](https://github.com/immuzov) in #10).
+* Add rollup ([@immuzov](https://github.com/immuzov) in [#1](https://github.com/smart-powers/js-spatial-navigation/issues/1)).
+* Add eslint and prettier ([@immuzov](https://github.com/immuzov) in [#2](https://github.com/smart-powers/js-spatial-navigation/issues/2)).
+* Remove jquery ([@immuzov](https://github.com/immuzov) in [#5](https://github.com/smart-powers/js-spatial-navigation/issues/5)).
+* Reformat code ([@immuzov](https://github.com/immuzov) in [#6](https://github.com/smart-powers/js-spatial-navigation/issues/6)).
+* Add customized keys ([@immuzov](https://github.com/immuzov) in [#9](https://github.com/smart-powers/js-spatial-navigation/issues/9)).
 
 ## 0.3.2 (April 28, 2016)
 
